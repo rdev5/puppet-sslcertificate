@@ -121,4 +121,14 @@ define sslcertificate (
     logoutput => true,
     require   => [File["inspect-${name}-certificate.ps1"], File["import-${name}-certificate.ps1"]],
   }
+  
+  exec { "Cleanup ${scripts_dir}\\import-${name}.ps1":
+    provider => 'powershell',
+    command => "Remove-Item -Force ${scripts_dir}\\import-${name}.ps1",
+    require => Exec["Install-${name}-SSLCert"],
+  } ->
+  exec { "Cleanup ${scripts_dir}\\inspect-${name}.ps1":
+    provider => 'powershell',
+    command => "Remove-Item -Force ${scripts_dir}\\inspect-${name}.ps1",
+  }
 }
